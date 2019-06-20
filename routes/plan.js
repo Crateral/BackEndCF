@@ -7,34 +7,6 @@ var mdAutenticacion = require('../middlewares/autenticacion');
 // Inicializar variables
 var app = express();
 
-//Obtener todos los planes
-app.get('/', (req, res, next) => {
-
-    var desde = req.query.desde || 0;
-    desde = Number(desde);
-
-    Plan.find((err, planes) => {
-
-        if (err) {
-            return res.status(500).json({
-                ok: false,
-                mensaje: 'Error cargando planes de la BD',
-                errors: err
-            });
-        }
-
-        Plan.count({}, (err, conteo) => {
-            res.status(200).json({
-                ok: true,
-                planes: planes,
-                total: conteo
-            });
-        });
-
-    }).skip(desde).limit(5);
-
-});
-
 //===============================
 // Obtener planes por usuario
 //===============================
@@ -67,7 +39,9 @@ app.get('/:usuario', (req, res, next) => {
 
 });
 
-//Actualizar usuarios
+//===============================
+// Actualizar Plan
+//===============================
 app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
     var id = req.params.id;
     var body = req.body;
@@ -112,15 +86,16 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
         });
 });
 
-//Crear plan
+//===============================
+// Crear Plan
+//===============================
 app.post('/', mdAutenticacion.verificaToken, (req, res) => {
 
     var body = req.body;
 
     var plan = new Plan({
-        fecha_ini: body.fecha_ini,
-        fecha_fin: body.fecha_fin,
-        usuario: body.id_usuario
+        nombre: body.nombre,
+        descripcion: body.descripcion
     });
 
     plan.save((err, planGuardado) => {
@@ -138,6 +113,37 @@ app.post('/', mdAutenticacion.verificaToken, (req, res) => {
         });
 
     });
+
+});
+
+
+//===============================
+// Consultar todos los planes
+//===============================
+app.get('/', (req, res, next) => {
+
+    var desde = req.query.desde || 0;
+    desde = Number(desde);
+
+    Plan.find((err, planes) => {
+
+        if (err) {
+            return res.status(500).json({
+                ok: false,
+                mensaje: 'Error cargando planes de la BD',
+                errors: err
+            });
+        }
+
+        Plan.count({}, (err, conteo) => {
+            res.status(200).json({
+                ok: true,
+                planes: planes,
+                total: conteo
+            });
+        });
+
+    }).skip(desde).limit(5);
 
 });
 

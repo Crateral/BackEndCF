@@ -34,18 +34,4 @@ function buscarPlanPorUsuario(idUsuario) {
     });
 }
 
-function buscarSesionesPorPlan(idPlan) {
-
-    return new Promise((resolve, reject) => {
-        Sesion.find({ plan: idPlan }, (err, sesiones) => {
-
-            if (err) {
-                reject('Error al cargar los usuarios ', err);
-            } else {
-                resolve(sesiones);
-            }
-        })
-    });
-}
-
 module.exports = app;

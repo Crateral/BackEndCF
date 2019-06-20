@@ -1,6 +1,6 @@
 // Requires
 var express = require('express');
-var Sesion = require('../models/reserva');
+var Reserva = require('../models/reserva');
 
 var mdAutenticacion = require('../middlewares/autenticacion');
 
@@ -8,61 +8,64 @@ var mdAutenticacion = require('../middlewares/autenticacion');
 var app = express();
 
 //===============================
-//Obtener todos las sesiones
+//Obtener todos las reservas
 //===============================
 app.get('/', (req, res, next) => {
 
     var desde = req.query.desde || 0;
     desde = Number(desde);
 
-    Sesion.find().exec(
-        (err, sesiones) => {
+    Reserva.find()
+        .populate('usuario', 'nombre email')
+        .populate('clase')
+        .exec(
+            (err, reservas) => {
 
-            if (err) {
-                return res.status(500).json({
-                    ok: false,
-                    mensaje: 'Error cargando planes de la BD',
-                    errors: err
-                });
-            }
+                if (err) {
+                    return res.status(500).json({
+                        ok: false,
+                        mensaje: 'Error cargando reservas de la BD',
+                        errors: err
+                    });
+                }
 
-            Sesion.count({}, (err, conteo) => {
-                res.status(200).json({
-                    ok: true,
-                    sesiones: sesiones,
-                    total: conteo
+                Reserva.count({}, (err, conteo) => {
+                    res.status(200).json({
+                        ok: true,
+                        reservas: reservas,
+                        total: conteo
+                    });
                 });
+
             });
-
-        }).skip(desde).limit(5);
 
 });
 
 //===============================
-// Obtener sesiones por Plan
+// Obtener reservas por Usuario
 //===============================
-app.get('/:plan', (req, res, next) => {
+app.get('/:usuario', (req, res, next) => {
 
     var desde = req.query.desde || 0;
     desde = Number(desde);
 
-    var idPlan = req.params.plan;
+    var idUsuario = req.params.usuario;
 
-    Sesion.find({ plan: idPlan }).exec(
-        (err, sesiones) => {
+    Reserva.find({ usuario: idUsuario }).exec(
+        (err, reservas) => {
 
             if (err) {
                 return res.status(500).json({
                     ok: false,
-                    mensaje: 'Error cargando planes de la BD',
+                    mensaje: 'Error cargando reservas de la BD',
                     errors: err
                 });
             }
 
-            Sesion.count({}, (err, conteo) => {
+            Reserva.count({}, (err, conteo) => {
                 res.status(200).json({
                     ok: true,
-                    sesiones: sesiones,
+                    reservas: reservas,
                     total: conteo
                 });
             });
@@ -71,52 +74,54 @@ app.get('/:plan', (req, res, next) => {
 
 });
 
-//Actualizar sesion
+//===============================
+// Actualizar reservas 
+//===============================
 app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
     var id = req.params.id;
     var body = req.body;
 
-    Sesion.findById(id).exec(
-        (err, sesion) => {
+    Reserva.findById(id).exec(
+        (err, reserva) => {
 
             if (err) {
                 return res.status(500).json({
                     ok: false,
-                    mensaje: 'Error al buscar sesion',
+                    mensaje: 'Error al buscar reserva',
                     errors: err
                 });
             }
 
-            if (!sesion) {
+            if (!reserva) {
                 return res.status(400).json({
                     ok: false,
-                    mensaje: 'La sesion con el ID: ' + id + ' no existe.',
+                    mensaje: 'La reserva con el ID: ' + id + ' no existe.',
                     errors: { message: 'No existe seson con el ID: ' + id }
                 });
             }
 
             if (req.usuario.role == 'USER_ROLE') {
-                sesion.tiempo = body.tiempo;
-                sesion.repeticiones = body.repeticiones;
-                sesion.comentarios = body.comentarios;
+                reserva.tiempo = body.tiempo;
+                reserva.repeticiones = body.repeticiones;
+                reserva.comentarios = body.comentarios;
             } else {
-                sesion.numero_semana = body.numero_semana;
-                sesion.wod = body.wod;
-                sesion.plan = body.plan;
+                reserva.numero_semana = body.numero_semana;
+                reserva.wod = body.wod;
+                reserva.plan = body.plan;
             }
 
-            sesion.save((err, sesionGuardada) => {
+            reserva.save((err, reservaGuardada) => {
                 if (err) {
                     return res.status(400).json({
                         ok: false,
-                        mensaje: 'Error al actualizar sesion',
+                        mensaje: 'Error al actualizar reserva',
                         errors: err
                     });
                 }
 
                 res.status(200).json({
                     ok: true,
-                    sesion: sesionGuardada,
+                    reserva: reservaGuardada,
                 });
 
             });
@@ -124,29 +129,31 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
         });
 });
 
-//Crear sesion
+//===============================
+// Crear reserva
+//===============================
 app.post('/', mdAutenticacion.verificaToken, (req, res) => {
 
     var body = req.body;
 
-    var sesion = new Sesion({
-        numero_semana: body.numero_semana,
-        wod: body.wod,
-        plan: body.id_plan
+    var reserva = new Reserva({
+        usuario: body.usuario,
+        clase: body.clase,
+        fechaReserva: body.fechaReserva
     });
 
-    sesion.save((err, sesionGuardada) => {
+    reserva.save((err, reservaGuardada) => {
         if (err) {
             return res.status(400).json({
                 ok: false,
-                mensaje: 'Error al crear el sesion',
+                mensaje: 'Error al crear el reserva',
                 errors: err
             });
         }
 
         res.status(201).json({
             ok: true,
-            sesion: sesionGuardada,
+            reserva: reservaGuardada,
         });
 
     });
