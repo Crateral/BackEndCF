@@ -46,7 +46,7 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
     var id = req.params.id;
     var body = req.body;
 
-    Plan.findById(id, 'nombre email img role').exec(
+    Plan.findById(id, 'nombre descripcion').exec(
         (err, plan) => {
 
             if (err) {
@@ -65,7 +65,9 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
                 });
             }
 
-            plan.fecha_fin = body.fecha_fin;
+            plan.nombre = body.nombre;
+            plan.descripcion = body.descripcion;
+            plan.valor = body.valor;
 
             plan.save((err, planGuardado) => {
                 if (err) {
@@ -95,7 +97,8 @@ app.post('/', mdAutenticacion.verificaToken, (req, res) => {
 
     var plan = new Plan({
         nombre: body.nombre,
-        descripcion: body.descripcion
+        descripcion: body.descripcion,
+        valor: body.valor
     });
 
     plan.save((err, planGuardado) => {
@@ -144,6 +147,37 @@ app.get('/', (req, res, next) => {
         });
 
     }).skip(desde).limit(5);
+
+});
+
+//===============================
+// Borrar Plan por ID
+//===============================
+app.delete('/:id', mdAutenticacion.verificaToken, (req, res) => {
+    var id = req.params.id;
+
+    Plan.findByIdAndRemove(id, (err, planBorrado) => {
+        if (err) {
+            return res.status(400).json({
+                ok: false,
+                mensaje: 'Error al borrar el plan con ID: ' + id,
+                errors: err
+            });
+        }
+
+        if (!planBorrado) {
+            return res.status(400).json({
+                ok: false,
+                mensaje: 'No existe el plan con ID: ' + id,
+                errors: err
+            });
+        }
+
+        res.status(201).json({
+            ok: true,
+            plan: planBorrado,
+        });
+    })
 
 });
 

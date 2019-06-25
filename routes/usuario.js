@@ -10,13 +10,15 @@ var mdAutenticacion = require('../middlewares/autenticacion');
 var app = express();
 
 
+//===============================
 //Obtener todos los usuarios
+//===============================
 app.get('/', (req, res, next) => {
 
     var desde = req.query.desde || 0;
     desde = Number(desde);
 
-    Usuario.find({}, 'nombre email img role')
+    Usuario.find({}, 'nombre email img role fechaInscripcion plan')
         .skip(desde)
         .limit(5)
         .exec(
@@ -42,12 +44,14 @@ app.get('/', (req, res, next) => {
 
 });
 
-//Actualizar usuarios
+//===============================
+// Actualizar Usuario
+//===============================
 app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
     var id = req.params.id;
     var body = req.body;
 
-    Usuario.findById(id, 'nombre email img role').exec(
+    Usuario.findById(id, 'nombre email img role fechaInscripcion plan').exec(
         (err, usuario) => {
 
             if (err) {
@@ -68,7 +72,7 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
 
             usuario.nombre = body.nombre;
             usuario.email = body.email;
-            usuario.role = body.role;
+            usuario.password = bcrypt.hashSync(body.password, 10);
 
             usuario.save((err, usuarioGuardado) => {
                 if (err) {
@@ -89,7 +93,9 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
         });
 });
 
-//Crear usuarios
+//===============================
+// Crear Usuario
+//===============================
 app.post('/', mdAutenticacion.verificaToken, (req, res) => {
 
     var body = req.body;
@@ -122,7 +128,9 @@ app.post('/', mdAutenticacion.verificaToken, (req, res) => {
 
 });
 
-//Borrar usuario por id
+//===============================
+// Borrar Usuario por ID
+//===============================
 app.delete('/:id', mdAutenticacion.verificaToken, (req, res) => {
     var id = req.params.id;
 

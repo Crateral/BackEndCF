@@ -100,15 +100,7 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
                 });
             }
 
-            if (req.usuario.role == 'USER_ROLE') {
-                reserva.tiempo = body.tiempo;
-                reserva.repeticiones = body.repeticiones;
-                reserva.comentarios = body.comentarios;
-            } else {
-                reserva.numero_semana = body.numero_semana;
-                reserva.wod = body.wod;
-                reserva.plan = body.plan;
-            }
+            reserva.estado = body.estado;
 
             reserva.save((err, reservaGuardada) => {
                 if (err) {
@@ -160,5 +152,35 @@ app.post('/', mdAutenticacion.verificaToken, (req, res) => {
 
 });
 
+//===============================
+// Borrar Reserva por ID
+//===============================
+app.delete('/:id', mdAutenticacion.verificaToken, (req, res) => {
+    var id = req.params.id;
+
+    Reserva.findByIdAndRemove(id, (err, reservaBorrada) => {
+        if (err) {
+            return res.status(400).json({
+                ok: false,
+                mensaje: 'Error al borrar la reserva con ID: ' + id,
+                errors: err
+            });
+        }
+
+        if (!reservaBorrada) {
+            return res.status(400).json({
+                ok: false,
+                mensaje: 'No existe la reserva con ID: ' + id,
+                errors: err
+            });
+        }
+
+        res.status(201).json({
+            ok: true,
+            reserva: reservaBorrada,
+        });
+    })
+
+});
 
 module.exports = app;
