@@ -20,6 +20,8 @@ var planRoutes = require('./routes/plan');
 var claseRoutes = require('./routes/clase');
 var reservaRoutes = require('./routes/reserva');
 var busquedaRoutes = require('./routes/busqueda');
+var uploadRoutes = require('./routes/upload');
+var imagenesRoutes = require('./routes/imagenes');
 
 // Conexion BD
 mongoose.connection.openUri('mongodb://localhost:27017/CrossfitDB', (err, res) => {
@@ -37,6 +39,8 @@ app.use('/plan', planRoutes);
 app.use('/busqueda', busquedaRoutes);
 app.use('/clase', claseRoutes);
 app.use('/reserva', reservaRoutes);
+app.use('/upload', uploadRoutes);
+app.use('/imagenes', imagenesRoutes);
 app.use('/', appRoutes);
 
 
