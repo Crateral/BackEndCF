@@ -8,7 +8,7 @@ var usuarioSchema = new Schema({
     email: { type: String, unique: true, required: [true, 'El correo es necesario'] },
     password: { type: String, required: [true, 'La contraseña es necesario'] },
     img: { type: String, required: false },
-    role: { type: String, required: true, default: 'USER_ROLE' },
+    role: { type: String, required: false, default: 'USER_ROLE' },
     fechaInscripcion: { type: String, required: [true, 'La feacha de inscripcion es necesaria'] },
     plan: { type: Schema.Types.ObjectId, ref: 'Plan' }
 
