@@ -72,7 +72,10 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
 
             usuario.nombre = body.nombre;
             usuario.email = body.email;
-            usuario.password = bcrypt.hashSync(body.password, 10);
+            if (body.password) {
+                usuario.password = bcrypt.hashSync(body.password, 10);
+            }
+
 
             usuario.save((err, usuarioGuardado) => {
                 if (err) {

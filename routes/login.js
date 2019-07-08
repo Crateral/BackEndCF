@@ -42,7 +42,7 @@ app.post('', (req, res) => {
                 });
             }
 
-            usuarioBD.password = ':)';
+            usuarioBD.password = '';
 
             //Crear un token
             var token = jwt.sign({ usuario: usuarioBD }, SEED, { expiresIn: 14400 });
