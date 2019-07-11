@@ -10,7 +10,8 @@ var usuarioSchema = new Schema({
     img: { type: String, required: false },
     role: { type: String, required: false, default: 'USER_ROLE' },
     fechaInscripcion: { type: String, required: [true, 'La feacha de inscripcion es necesaria'] },
-    plan: { type: Schema.Types.ObjectId, ref: 'Plan' }
+    plan: { type: Schema.Types.ObjectId, ref: 'Plan' },
+    estado: { type: String, required: false, default: 'ACTIVO' }
 
 });
 

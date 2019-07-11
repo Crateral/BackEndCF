@@ -54,7 +54,7 @@ app.post('', (req, res) => {
                 token: token,
                 id: usuarioBD._id
             });
-        });
+        }).populate('plan');
 
 });
 

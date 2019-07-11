@@ -18,9 +18,10 @@ app.get('/', (req, res, next) => {
     var desde = req.query.desde || 0;
     desde = Number(desde);
 
-    Usuario.find({}, 'nombre email img role fechaInscripcion plan')
+    Usuario.find({}, 'nombre email img role fechaInscripcion plan estado')
         .skip(desde)
         .limit(5)
+        .populate('plan')
         .exec(
             (err, usuarios) => {
 
@@ -75,7 +76,8 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
             if (body.password) {
                 usuario.password = bcrypt.hashSync(body.password, 10);
             }
-
+            usuario.estado = body.estado;
+            usuario.plan = body.plan;
 
             usuario.save((err, usuarioGuardado) => {
                 if (err) {

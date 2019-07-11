@@ -1,36 +1,40 @@
 // Requires
 var express = require('express');
-var Plan = require('../models/Plan');
+var Usuario = require('../models/usuario')
 
 // Inicializar variables
 var app = express();
 
-app.get('/plan/:usuario', (req, res, next) => {
+app.get('/usuario/:busqueda', (req, res, next) => {
 
-    var idUsuario = req.params.usuario;
+    var busqueda = req.params.busqueda;
+    var regex = new RegExp(busqueda, 'i');
+    var promesa = buscarUsuarios(busqueda, regex);
 
-    Promise.all([buscarPlanPorUsuario(idUsuario)])
-        .then(respuestas => {
-            res.status(200).json({
-                ok: true,
-                planes: respuestas[0]
-            })
+    promesa.then(data => {
+        return res.status(200).json({
+            ok: true,
+            usuarios: data
         });
+    }).catch(data => {
+        return res.status(400).json({
+            ok: false,
+            usuarios: data
+        });
+    });
 
 });
 
-
-function buscarPlanPorUsuario(idUsuario) {
-
+function buscarUsuarios(busqueda, regex) {
     return new Promise((resolve, reject) => {
-        Plan.find({ usuario: idUsuario }, (err, planes) => {
-
-            if (err) {
-                reject('Error al cargar los usuarios ', err);
-            } else {
-                resolve(planes);
-            }
-        })
+        Usuario.find({ nombre: regex }, 'nombre plan estado').populate('plan')
+            .exec((err, usuarios) => {
+                if (err) {
+                    reject('Error al cargar usuarios', err);
+                } else {
+                    resolve(usuarios);
+                }
+            });
     });
 }
 
