@@ -1,6 +1,6 @@
 // Requires
 var express = require('express');
-var Plan = require('../models/Plan');
+var Plan = require('../models/plan');
 
 var mdAutenticacion = require('../middlewares/autenticacion');
 
