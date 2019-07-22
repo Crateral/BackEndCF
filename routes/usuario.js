@@ -3,6 +3,7 @@ var express = require('express');
 var Usuario = require('../models/usuario');
 var bcrypt = require('bcryptjs');
 var jwt = require('jsonwebtoken');
+var moment = require('moment');
 
 var mdAutenticacion = require('../middlewares/autenticacion');
 
@@ -18,7 +19,7 @@ app.get('/', (req, res, next) => {
     var desde = req.query.desde || 0;
     desde = Number(desde);
 
-    Usuario.find({}, 'nombre email img role fechaInscripcion plan estado')
+    Usuario.find({}, 'nombre email img role fechaInscripcion plan estado fechaInicioPlan fechaFinPlan cedula rh')
         .skip(desde)
         .limit(5)
         .populate('plan')
@@ -51,6 +52,7 @@ app.get('/', (req, res, next) => {
 app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
     var id = req.params.id;
     var body = req.body;
+    var fecha = moment().format('DD/MM/YYYY HH:mm:SS');
 
     Usuario.findById(id, 'nombre email img role fechaInscripcion plan').exec(
         (err, usuario) => {
@@ -77,7 +79,14 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
                 usuario.password = bcrypt.hashSync(body.password, 10);
             }
             usuario.estado = body.estado;
-            usuario.plan = body.plan;
+            if (usuario.plan !== body.plan) {
+                usuario.plan = body.plan;
+                usuario.fechaInicioPlan = fecha;
+                usuario.fechaFinPlan = moment(fecha, 'DD/MM/YYYY HH:mm:SS').add(30, 'days').format('DD/MM/YYYY HH:mm:SS');
+            }
+            usuario.rh = body.rh;
+            usuario.cedula = body.cedula;
+            usuario.fechaNacimiento = body.fechaNacimiento;
 
             usuario.save((err, usuarioGuardado) => {
                 if (err) {
@@ -105,14 +114,21 @@ app.post('/', (req, res) => {
 
     var body = req.body;
 
+    var fecha = moment().format('DD/MM/YYYY HH:mm:SS');
+
     var usuario = new Usuario({
         nombre: body.nombre,
         email: body.email,
         password: bcrypt.hashSync(body.password, 10),
         img: body.img,
         role: body.role,
-        fechaInscripcion: body.fechaInscripcion,
-        plan: body.plan
+        fechaInscripcion: fecha,
+        plan: body.plan,
+        fechaInicioPlan: fecha,
+        fechaFinPlan: moment(fecha, 'DD/MM/YYYY HH:mm:SS').add(30, 'days').format('DD/MM/YYYY HH:mm:SS'),
+        cedula: body.cedula,
+        rh: body.rh,
+        fechaNacimiento: body.fechaNacimiento
     });
 
     usuario.save((err, usuarioGuardado) => {

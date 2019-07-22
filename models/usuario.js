@@ -11,7 +11,12 @@ var usuarioSchema = new Schema({
     role: { type: String, required: false, default: 'USER_ROLE' },
     fechaInscripcion: { type: String, required: [true, 'La feacha de inscripcion es necesaria'] },
     plan: { type: Schema.Types.ObjectId, ref: 'Plan' },
-    estado: { type: String, required: false, default: 'ACTIVO' }
+    estado: { type: String, required: false, default: 'ACTIVO' },
+    fechaInicioPlan: { type: String, required: false },
+    fechaFinPlan: { type: String, required: false },
+    cedula: { type: String, required: false },
+    rh: { type: String, required: false },
+    fechaNacimiento: { type: String, require: false }
 
 });
 
