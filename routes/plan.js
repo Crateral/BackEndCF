@@ -46,7 +46,7 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
     var id = req.params.id;
     var body = req.body;
 
-    Plan.findById(id, 'nombre descripcion').exec(
+    Plan.findById(id, 'nombre descripcion valor').exec(
         (err, plan) => {
 
             if (err) {

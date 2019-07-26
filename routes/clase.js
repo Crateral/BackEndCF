@@ -14,25 +14,25 @@ app.get('/', (req, res, next) => {
     var desde = req.query.desde || 0;
     desde = Number(desde);
 
-    Clase.find((err, clases) => {
+    Clase.find()
+        .exec((err, clases) => {
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    mensaje: 'Error cargando clases de la BD',
+                    errors: err
+                });
+            }
 
-        if (err) {
-            return res.status(500).json({
-                ok: false,
-                mensaje: 'Error cargando clases de la BD',
-                errors: err
+            Clase.count({}, (err, conteo) => {
+                res.status(200).json({
+                    ok: true,
+                    clases: clases,
+                    total: conteo
+                });
             });
-        }
 
-        Clase.count({}, (err, conteo) => {
-            res.status(200).json({
-                ok: true,
-                clases: clases,
-                total: conteo
-            });
         });
-
-    }).skip(desde).limit(5);
 
 });
 
@@ -49,7 +49,7 @@ app.post('/', mdAutenticacion.verificaToken, (req, res) => {
         fecha: body.fecha,
         descripcion: body.descripcion,
         coach: body.coach,
-        ubicacion: body.ubicacion
+        wod: body.wod
     });
 
     clase.save((err, claseGuardada) => {
@@ -95,15 +95,10 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
                     errors: { message: 'No existe clase con el ID: ' + id }
                 });
             }
-
-            clase.horaInicio = body.horaInicio;
-            clase.horaFinal = body.horaFinal;
-            clase.fecha = body.fecha;
             clase.descripcion = body.descripcion;
             clase.coach = body.coach;
-            clase.ubicacion = body.ubicacion;
             clase.cupo = body.cupo;
-            clase.estado = body.estado;
+            clase.wod = body.wod;
 
             clase.save((err, claseGuardada) => {
                 if (err) {

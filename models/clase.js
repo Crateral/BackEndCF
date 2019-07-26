@@ -8,9 +8,9 @@ var claseSchema = new Schema({
     fecha: { type: String, required: [true, 'La fecha es necesaria'] },
     descripcion: { type: String, required: false },
     coach: { type: String, required: false },
-    ubicacion: { type: String, required: false },
-    cupo: { type: String, default: '16' },
-    estado: { type: String, default: 'ACTIVO' }
+    cupo: { type: String, required: false, default: '16' },
+    estado: { type: String, required: false, default: 'ACTIVO' },
+    wod: { type: String, required: false }
 
 }, { collection: 'clases' });
 

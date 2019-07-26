@@ -16,7 +16,14 @@ var usuarioSchema = new Schema({
     fechaFinPlan: { type: String, required: false },
     cedula: { type: String, required: false },
     rh: { type: String, required: false },
-    fechaNacimiento: { type: String, require: false }
+    fechaNacimiento: { type: String, required: false },
+    telefono: { type: String, required: false },
+    nombreContacto: { type: String, required: false },
+    telefonoContacto: { type: String, required: false },
+    direccion: { type: String, required: false },
+    descuento: { type: Boolean, required: false, default: false },
+    porcentajeDescuento: { type: String, required: false },
+    totalValorPlan: { type: String, required: false }
 
 });
 

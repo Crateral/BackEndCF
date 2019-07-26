@@ -46,7 +46,7 @@ app.get('/plan/:busqueda', (req, res, next) => {
 
 function buscarUsuarios(busqueda, regex) {
     return new Promise((resolve, reject) => {
-        Usuario.find({ nombre: regex }, 'nombre plan estado').populate('plan')
+        Usuario.find({ nombre: regex }, 'nombre email img role fechaInscripcion plan estado fechaInicioPlan fechaFinPlan cedula rh fechaNacimiento telefono nombreContacto telefonoContacto direccion descuento porcentajeDescuento totalValorPlan').populate('plan')
             .exec((err, usuarios) => {
                 if (err) {
                     reject('Error al cargar usuarios', err);
@@ -59,7 +59,7 @@ function buscarUsuarios(busqueda, regex) {
 
 function buscarPlanes(busqueda, regex) {
     return new Promise((resolve, reject) => {
-        Plan.find({ nombre: regex }, 'nombre valor')
+        Plan.find({ nombre: regex }, 'nombre valor descripcion')
             .exec((err, planes) => {
                 if (err) {
                     reject('Error al cargar planes', err);

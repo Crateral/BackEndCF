@@ -6,6 +6,7 @@ var jwt = require('jsonwebtoken');
 var moment = require('moment');
 
 var mdAutenticacion = require('../middlewares/autenticacion');
+var enviarCorreo = require('../utils/correo');
 
 // Inicializar variables
 var app = express();
@@ -19,7 +20,7 @@ app.get('/', (req, res, next) => {
     var desde = req.query.desde || 0;
     desde = Number(desde);
 
-    Usuario.find({}, 'nombre email img role fechaInscripcion plan estado fechaInicioPlan fechaFinPlan cedula rh')
+    Usuario.find({}, 'nombre email img role fechaInscripcion plan estado fechaInicioPlan fechaFinPlan cedula rh fechaNacimiento telefono nombreContacto telefonoContacto direccion descuento porcentajeDescuento totalValorPlan')
         .skip(desde)
         .limit(5)
         .populate('plan')
@@ -54,7 +55,7 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
     var body = req.body;
     var fecha = moment().format('DD/MM/YYYY HH:mm:SS');
 
-    Usuario.findById(id, 'nombre email img role fechaInscripcion plan').exec(
+    Usuario.findById(id, 'nombre email img role fechaInscripcion plan estado fechaInicioPlan fechaFinPlan cedula rh fechaNacimiento telefono nombreContacto telefonoContacto direccion descuento porcentajeDescuento totalValorPlan').exec(
         (err, usuario) => {
 
             if (err) {
@@ -87,6 +88,13 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
             usuario.rh = body.rh;
             usuario.cedula = body.cedula;
             usuario.fechaNacimiento = body.fechaNacimiento;
+            usuario.telefono = body.telefono;
+            usuario.nombreContacto = body.nombreContacto;
+            usuario.telefonoContacto = body.telefonoContacto;
+            usuario.direccion = body.direccion;
+            usuario.descuento = body.descuento;
+            usuario.porcentajeDescuento = body.porcentajeDescuento;
+            usuario.totalValorPlan = body.totalValorPlan;
 
             usuario.save((err, usuarioGuardado) => {
                 if (err) {
@@ -128,7 +136,14 @@ app.post('/', (req, res) => {
         fechaFinPlan: moment(fecha, 'DD/MM/YYYY HH:mm:SS').add(30, 'days').format('DD/MM/YYYY HH:mm:SS'),
         cedula: body.cedula,
         rh: body.rh,
-        fechaNacimiento: body.fechaNacimiento
+        fechaNacimiento: body.fechaNacimiento,
+        telefono: body.telefono,
+        nombreContacto: body.nombreContacto,
+        telefonoContacto: body.telefonoContacto,
+        direccion: body.direccion,
+        descuento: body.descuento,
+        porcentajeDescuento: body.porcentajeDescuento,
+        totalValorPlan: body.totalValorPlan
     });
 
     usuario.save((err, usuarioGuardado) => {
@@ -144,6 +159,8 @@ app.post('/', (req, res) => {
             ok: true,
             usuario: usuarioGuardado,
         });
+
+        enviarCorreo.sendEmail(req.body.email, res);
 
     });
 
