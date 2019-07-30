@@ -33,7 +33,9 @@ var imagenesRoutes = require('./routes/imagenes');
 var horaRoutes = require('./routes/hora');
 
 // Conexion BD
-mongoose.connection.openUri('mongodb://localhost:27017/CrossfitDB', (err, res) => {
+//mongodb://localhost:27017/CrossfitDB
+var uri = 'mongodb+srv://cesar_hidalgo_dba:Killua93@bengalacfc0-6jtzq.mongodb.net/BengalaCFDB?retryWrites=true&w=majority';
+mongoose.connection.openUri(uri, (err, res) => {
     if (err) {
         throw err;
     }

@@ -15,8 +15,7 @@ app.get('/', (req, res, next) => {
     var desde = req.query.desde || 0;
     desde = Number(desde);
 
-    Reserva.find()
-        .populate('usuario', 'nombre email')
+    Reserva.find().populate('usuario', 'nombre email telefono')
         .populate('clase')
         .exec(
             (err, reservas) => {
@@ -38,39 +37,6 @@ app.get('/', (req, res, next) => {
                 });
 
             });
-
-});
-
-//===============================
-// Obtener reservas por Usuario
-//===============================
-app.get('/:usuario', (req, res, next) => {
-
-    var desde = req.query.desde || 0;
-    desde = Number(desde);
-
-    var idUsuario = req.params.usuario;
-
-    Reserva.find({ usuario: idUsuario }).exec(
-        (err, reservas) => {
-
-            if (err) {
-                return res.status(500).json({
-                    ok: false,
-                    mensaje: 'Error cargando reservas de la BD',
-                    errors: err
-                });
-            }
-
-            Reserva.count({}, (err, conteo) => {
-                res.status(200).json({
-                    ok: true,
-                    reservas: reservas,
-                    total: conteo
-                });
-            });
-
-        }).skip(desde).limit(5);
 
 });
 
