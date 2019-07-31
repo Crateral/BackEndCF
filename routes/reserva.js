@@ -93,11 +93,11 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
 app.post('/', mdAutenticacion.verificaToken, (req, res) => {
 
     var body = req.body;
-
+    var fecha = body.fechaReserva.split('-');
     var reserva = new Reserva({
         usuario: body.usuario,
         clase: body.clase,
-        fechaReserva: body.fechaReserva
+        fechaReserva: new Date(fecha[0], (fecha[1] - 1), fecha[2])
     });
 
     reserva.save((err, reservaGuardada) => {

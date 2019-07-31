@@ -43,10 +43,14 @@ app.post('/', mdAutenticacion.verificaToken, (req, res) => {
 
     var body = req.body;
 
+    console.log(body.fecha);
+    var fecha = body.fecha.split("-");
+    console.log(fecha[0]);
+
     var clase = new Clase({
         horaInicio: body.horaInicio,
         horaFinal: body.horaFinal,
-        fecha: body.fecha,
+        fecha: body.fecha, //new Date(fecha[0], (fecha[1] - 1), fecha[2]).toISOString(),
         descripcion: body.descripcion,
         coach: body.coach,
         wod: body.wod

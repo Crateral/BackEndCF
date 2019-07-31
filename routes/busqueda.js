@@ -46,11 +46,9 @@ app.get('/plan/:busqueda', (req, res, next) => {
 
 });
 
-app.get('/clase/:diaI/:mesI/:anioI/:diaF/:mesF/:anioF', (req, res, next) => {
+app.get('/clase/:fechaInicio/:fechaFin', (req, res, next) => {
 
-    var fechaInicio = req.params.diaI + '/' + req.params.mesI + '/' + req.params.anioI;
-    var fechaFin = req.params.diaF + '/' + req.params.mesiF + '/' + req.params.anioiF;
-    var promesa = buscarClasesSemanales(fechaInicio, fechaFin);
+    var promesa = buscarClasesSemanales(req.params.fechaInicio, req.params.fechaFin);
 
     promesa.then(data => {
         return res.status(200).json({
@@ -66,10 +64,10 @@ app.get('/clase/:diaI/:mesI/:anioI/:diaF/:mesF/:anioF', (req, res, next) => {
 
 });
 
-app.get('/clase/:diaI/:mesI/:anioI/:horaI', (req, res, next) => {
+app.get('/clase/dia/:fechaInicio/:horaI', (req, res, next) => {
 
-    var fechaInicio = req.params.diaI + '/' + req.params.mesI + '/' + req.params.anioI;
-    var promesa = buscarClasesPorFechaYHora(fechaInicio, req.params.horaI);
+    //var fechaInicio = req.params.diaI + '/' + req.params.mesI + '/' + req.params.anioI;
+    var promesa = buscarClasePorFechaYHora(req.params.fechaInicio, req.params.horaI);
 
     promesa.then(data => {
         return res.status(200).json({
@@ -85,11 +83,10 @@ app.get('/clase/:diaI/:mesI/:anioI/:horaI', (req, res, next) => {
 
 });
 
-app.get('/reserva/:dia/:mes/:anio', (req, res, next) => {
+app.get('/reserva/:fecha', (req, res, next) => {
 
-
-    var fecha = req.params.dia + '/' + req.params.mes + '/' + req.params.anio;
-    var promesa = buscarReservasPorFecha(fecha);
+    //var fecha = req.params.dia + '/' + req.params.mes + '/' + req.params.anio;
+    var promesa = buscarReservasPorFecha(req.params.fecha);
 
     promesa.then(data => {
         return res.status(200).json({
@@ -132,8 +129,9 @@ function buscarPlanes(busqueda, regex) {
 }
 
 function buscarClasesSemanales(fechaInicio, fechaFin) {
+
     return new Promise((resolve, reject) => {
-        Clase.find({ fecha: { $gte: fechaInicio, $lte: fechaFin } })
+        Clase.find({ 'fecha': { $gte: fechaInicio, $lte: fechaFin } })
             .exec((err, clases) => {
                 if (err) {
                     reject('Error al cargar clases', err);
@@ -144,11 +142,12 @@ function buscarClasesSemanales(fechaInicio, fechaFin) {
     });
 }
 
-function buscarClasesPorFechaYHora(fechaInicio, horaInicio) {
+function buscarClasePorFechaYHora(fechaInicio, horaInicio) {
     return new Promise((resolve, reject) => {
         Clase.find({ fecha: fechaInicio, horaInicio: horaInicio })
             .exec((err, clases) => {
                 if (err) {
+                    console.log(err);
                     reject('Error al cargar clases', err);
                 } else {
                     resolve(clases);
@@ -159,7 +158,7 @@ function buscarClasesPorFechaYHora(fechaInicio, horaInicio) {
 
 function buscarReservasPorFecha(fecha) {
     return new Promise((resolve, reject) => {
-        Reserva.find({ 'fechaReserva': fecha })
+        Reserva.find({ fechaReserva: fecha })
             .populate('usuario', 'nombre email telefono')
             .populate('clase')
             .exec((err, reserva) => {
