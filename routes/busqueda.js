@@ -102,6 +102,44 @@ app.get('/reserva/:fecha', (req, res, next) => {
 
 });
 
+app.get('/reserva/ids/:idCalse/:idUsuario', (req, res, next) => {
+
+    //var fecha = req.params.dia + '/' + req.params.mes + '/' + req.params.anio;
+    var promesa = buscarReservasPorIds(req.params.idCalse, req.params.idUsuario);
+
+    promesa.then(data => {
+        return res.status(200).json({
+            ok: true,
+            reserva: data
+        });
+    }).catch(data => {
+        return res.status(400).json({
+            ok: false,
+            reserva: data
+        });
+    });
+
+});
+
+app.get('/reserva/usuario/:idUsuario', (req, res, next) => {
+
+    //var fecha = req.params.dia + '/' + req.params.mes + '/' + req.params.anio;
+    var promesa = buscarReservasPorUsuario(req.params.idUsuario);
+
+    promesa.then(data => {
+        return res.status(200).json({
+            ok: true,
+            reservas: data
+        });
+    }).catch(data => {
+        return res.status(400).json({
+            ok: false,
+            reservas: data
+        });
+    });
+
+});
+
 function buscarUsuarios(busqueda, regex) {
     return new Promise((resolve, reject) => {
         Usuario.find({ nombre: regex }, 'nombre email img role fechaInscripcion plan estado fechaInicioPlan fechaFinPlan cedula rh fechaNacimiento telefono nombreContacto telefonoContacto direccion descuento porcentajeDescuento totalValorPlan').populate('plan')
@@ -147,7 +185,6 @@ function buscarClasePorFechaYHora(fechaInicio, horaInicio) {
         Clase.find({ fecha: fechaInicio, horaInicio: horaInicio })
             .exec((err, clases) => {
                 if (err) {
-                    console.log(err);
                     reject('Error al cargar clases', err);
                 } else {
                     resolve(clases);
@@ -157,8 +194,11 @@ function buscarClasePorFechaYHora(fechaInicio, horaInicio) {
 }
 
 function buscarReservasPorFecha(fecha) {
+
+    fechaFinal = new Date(fecha).toISOString();
+
     return new Promise((resolve, reject) => {
-        Reserva.find({ fechaReserva: fecha })
+        Reserva.find({ fechaReserva: fechaFinal })
             .populate('usuario', 'nombre email telefono')
             .populate('clase')
             .exec((err, reserva) => {
@@ -166,6 +206,38 @@ function buscarReservasPorFecha(fecha) {
                     reject('Error al cargar reservas', err);
                 } else {
                     resolve(reserva);
+                }
+            });
+    });
+}
+
+function buscarReservasPorIds(idClase, idUsuario) {
+
+    return new Promise((resolve, reject) => {
+        Reserva.find({ clase: idClase, usuario: idUsuario })
+            .populate('usuario', 'nombre email telefono')
+            .populate('clase')
+            .exec((err, reserva) => {
+                if (err) {
+                    reject('Error al cargar reserva', err);
+                } else {
+                    resolve(reserva);
+                }
+            });
+    });
+}
+
+function buscarReservasPorUsuario(idUsuario) {
+
+    return new Promise((resolve, reject) => {
+        Reserva.find({ 'usuario': idUsuario })
+            .populate('usuario', 'nombre email telefono')
+            .populate('clase')
+            .exec((err, reservas) => {
+                if (err) {
+                    reject('Error al cargar reserva', err);
+                } else {
+                    resolve(reservas);
                 }
             });
     });
