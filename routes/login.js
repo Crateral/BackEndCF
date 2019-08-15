@@ -52,10 +52,56 @@ app.post('', (req, res) => {
                 ok: true,
                 usuario: usuarioBD,
                 token: token,
-                id: usuarioBD._id
+                id: usuarioBD._id,
+                menu: cargarMenu(usuarioBD.role)
             });
         }).populate('plan');
 
 });
+
+function cargarMenu(role) {
+
+    if (role === 'ADMIN_ROLE') {
+        menu = [{
+                titulo: 'Administracion',
+                icono: 'mdi mdi-gauge',
+                submenu: [
+                    { titulo: 'Administrar Usuarios', url: '/administrarUsuarios' },
+                    { titulo: 'Administrar Planes', url: '/administrarPlanes' },
+                    { titulo: 'Administrar Clases', url: '/administrarClases' },
+                    { titulo: 'Administrar Reservas', url: '/administrarReservas' }
+                ]
+            },
+            {
+                titulo: 'Administracion Ingresos',
+                icono: 'mdi mdi-gauge',
+                submenu: [
+                    { titulo: 'Crear plan', url: '/progress' },
+                    { titulo: 'Ver resultados', url: '/graficas1' }
+                ]
+            }
+        ];
+    } else if (role === 'COACH_ROLE') {
+        menu = [{
+            titulo: 'Reservas',
+            icono: 'mdi mdi-gauge',
+            submenu: [
+                { titulo: 'Reservas', url: '/reservasCoach' }
+            ]
+        }];
+    } else {
+        menu = [{
+            titulo: 'Clases y Plan',
+            icono: 'mdi mdi-gauge',
+            submenu: [
+                { titulo: 'Clases', url: '/reservasUsuarios' },
+                { titulo: 'Plan', url: '/planUsuario' }
+            ]
+        }]
+    }
+
+
+    return menu;
+}
 
 module.exports = app;

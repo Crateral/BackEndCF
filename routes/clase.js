@@ -1,6 +1,6 @@
 // Requires
 var express = require('express');
-var Clase = require('../models/Clase');
+var Clase = require('../models/clase');
 
 var mdAutenticacion = require('../middlewares/autenticacion');
 // Inicializar variables

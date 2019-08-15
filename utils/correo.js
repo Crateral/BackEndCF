@@ -4,7 +4,9 @@ var config = require('../config/config');
 exports.sendEmail = function(req, res) {
     // Definimos el transporter
     var transporter = nodemailer.createTransport({
-        service: 'Gmail',
+        host: 'smtp.zoho.com',
+        port: 465,
+        secure: true, //ssl
         auth: {
             user: config.CORREO,
             pass: config.PASSWORD
@@ -21,7 +23,7 @@ exports.sendEmail = function(req, res) {
     transporter.sendMail(mailOptions, function(error, info) {
         if (error) {
             console.log(error);
-            res.send(500, err.message);
+            res.send(500, error.message);
         } else {
             console.log("Email sent");
             res.status(200).jsonp(req.body);

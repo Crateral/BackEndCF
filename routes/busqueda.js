@@ -2,7 +2,7 @@
 var express = require('express');
 var Usuario = require('../models/usuario');
 var Plan = require('../models/plan');
-var Clase = require('../models/Clase');
+var Clase = require('../models/clase');
 var Reserva = require('../models/reserva');
 var app = express();
 
@@ -142,7 +142,9 @@ app.get('/reserva/usuario/:idUsuario', (req, res, next) => {
 
 function buscarUsuarios(busqueda, regex) {
     return new Promise((resolve, reject) => {
-        Usuario.find({ nombre: regex }, 'nombre email img role fechaInscripcion plan estado fechaInicioPlan fechaFinPlan cedula rh fechaNacimiento telefono nombreContacto telefonoContacto direccion descuento porcentajeDescuento totalValorPlan').populate('plan')
+        Usuario.find({ 'role': 'USER_ROLE' }, 'nombre email img role fechaInscripcion plan estado fechaInicioPlan fechaFinPlan cedula rh fechaNacimiento telefono nombreContacto telefonoContacto direccion descuento porcentajeDescuento totalValorPlan')
+            .or([{ 'nombre': regex }, { 'estado': regex }])
+            .populate('plan')
             .exec((err, usuarios) => {
                 if (err) {
                     reject('Error al cargar usuarios', err);
